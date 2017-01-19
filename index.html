@@ -1,0 +1,81 @@
+<html ng-app="kim">
+  <head>
+    <meta charset="utf-8">
+    <title>[KYM]</title>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <script src="lib/angular/angular.min.js"></script>
+    <script src="lib/angular/angular-locale_pt-br.js"></script>
+    <script src="controllers/expenses.js"></script>
+  </head>
+
+  <body ng-controller="expenses">
+    <div id="title-holder">
+      <h1 class="title">Know Your Money [KYM]</h1>
+    </div>
+    <div id="sub-title-holder">
+      <h1 class="sub-title">De forma fácil e rápida gerencie seus gastos e saiba para onde seu dinheiro está indo!</h1>
+    </div>
+
+
+    <!-- BEGIN - Search -->
+    <div id="search">
+      <input type="text" ng-model="search" ng-model-options="{updateOn: 'default', debounce:{default: 500}}"placeholder="Encontrar despesas">
+    </div>
+    <!-- END - Search -->
+
+    <!-- BEGIN - Expenses list -->
+    <div id="expenses-list">
+
+      <!-- BEGIN - Expenses list head -->
+      <div id="expenses-list-head">
+        <div id="expenses-resume">
+          <div id="expenses-resume-title">Resumo da lista de despesas</div>
+          <div id="total-of-expenses">Total de despesas: {{countExpenses(expenses | filter:search)}}</div>
+          <div id="total-of-expenses-cost">Custo total: {{countExpensesCost(expenses | filter:search) | currency}}</div>
+        </div>
+      </div>
+      <!-- END - Expenses list head -->
+
+      <!-- BEGIN - Expenses list body -->
+      <div id="expenses-list-body">
+        <div class="expense-card" ng-repeat="expense in expenses | filter:search | orderBy:'-createdDate'">
+          <div class="expense-cost">{{::expense.cost | currency}}</div>
+          <div class="expense-name">{{::expense.name}}</div>
+          <div class="expense-tags">
+            <div class="expense-tag" ng-repeat="tag in expense.tags">{{::tag}}</div>
+          </div>
+          <div class="expense-created-date">Criado em {{::expense.createdDate | date:'dd/MM/yyyy'}} às {{::expense.createdDate | date:'HH:mm'}}</div>
+          <div class="expense-remove" ng-click="removeExpense(this.expense)">Remover</div>
+        </div>
+      </div>
+      <!-- END - Expenses list body -->
+
+    </div>
+    <!-- END - Expenses list -->
+
+    <!-- BEGIN - Create expense -->
+    <div id="create-expense-holder">
+      <div id="create-expense-card">
+        <form name='createExpenseForm'>
+          <input id="expense-cost" name="cost" ng-model="expense.cost" placeholder="Valor da despesa: {{0.0 | currency}}" ng-required="true" ng-minLength="1" ng-pattern="/^\d+([,\d]{2,3})?$/"/>
+          <div class='invalid-input' ng-show="createExpenseForm.cost.$invalid && createExpenseForm.cost.$dirty">
+            É necessário especificar um valor para a despesa.
+          </div>
+          <textarea id="expense-name" name="name" ng-model="expense.name" placeholder="Exemplo: Sorvete de baunilha #diversão" ng-required="true" ng-minLength="1"></textarea>
+          <div class='invalid-input' ng-show="createExpenseForm.name.$invalid && createExpenseForm.name.$dirty">
+            É necessário descrever a despesa. Ah, para facilitar suas buscas posteriores, utilize hashtags '#'.
+          </div>
+        </div>
+        <button type="button" id="save-expense" ng-click="saveExpense(expense)" ng-disabled="createExpenseForm.$invalid">Salvar despesa</button>
+      </form>
+    </div>
+    <!-- END - Create expense -->
+
+    <div id="footer">
+      Developed by Times Is Money
+    </div>
+
+  </body>
+</html>
